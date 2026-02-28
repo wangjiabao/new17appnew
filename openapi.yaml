@@ -966,6 +966,8 @@ components:
                     type: string
                 addressId:
                     type: string
+                amount:
+                    type: string
         DeleteAddressReply:
             type: object
             properties:

@@ -4013,6 +4013,65 @@ func (ub *UserBalanceRepo) GetGoods(ctx context.Context) ([]*biz.Good, error) {
 	return res, nil
 }
 
+// UpdateUserNewNewNew .
+func (ui *UserInfoRepo) UpdateUserNewNewNew(ctx context.Context, userId int64, amount uint64, amountRel float64, amountRelIspay float64, one, two, three string, four int64) error {
+	res := ui.data.DB(ctx).Table("user").Where("id=?", userId).
+		Updates(map[string]interface{}{
+			"amount": gorm.Expr("amount + ?", amount),
+		})
+	if res.Error != nil || 1 != res.RowsAffected {
+		return errors.New(500, "UPDATE_USER_ERROR", "用户信息修改失败")
+	}
+
+	res = ui.data.DB(ctx).Table("user_balance").
+		Where("user_id=?", userId).Where("balance_usdt_float>=?", amountRel).
+		Updates(map[string]interface{}{
+			"balance_usdt_float": gorm.Expr("balance_usdt_float - ?", amountRel),
+			"balance_raw_float":  gorm.Expr("balance_raw_float + ?", amountRelIspay),
+		})
+	if res.Error != nil || 1 != res.RowsAffected {
+		return errors.New(500, "UPDATE_USER_ERROR", "one信息修改失败")
+	}
+
+	res = ui.data.DB(ctx).Table("total").Where("id=?", 1).
+		Updates(map[string]interface{}{"one": gorm.Expr("one + ?", amount)})
+	if res.Error != nil || 1 != res.RowsAffected {
+		return errors.New(500, "UPDATE_USER_ERROR", "one信息修改失败")
+	}
+
+	var buyRecord BuyRecord
+	buyRecord.UserId = userId
+	buyRecord.Amount = float64(amount)
+	buyRecord.AmountGet = 0
+	buyRecord.Status = 1
+	buyRecord.LastUpdated = time.Now().UTC().Unix()
+	buyRecord.One = one
+	buyRecord.Two = two
+	buyRecord.Three = three
+	buyRecord.Four = four
+
+	res = ui.data.DB(ctx).Table("buy_record").Create(&buyRecord)
+	if res.Error != nil || 1 != res.RowsAffected {
+		return errors.New(500, "CREATE_LOCATION_ERROR", "占位信息创建失败")
+	}
+
+	var (
+		reward Reward
+	)
+
+	reward.UserId = userId
+	reward.AmountNew = amountRel
+	reward.AmountNewTwo = amountRelIspay
+	reward.Type = "USDT"  // 本次分红的行为类型
+	reward.Reason = "buy" // 给我分红的理由
+	res = ui.data.DB(ctx).Table("reward").Create(&reward)
+	if res.Error != nil || 1 != res.RowsAffected {
+		return errors.New(500, "CREATE_LOCATION_ERROR", "占位信息创建失败")
+	}
+
+	return nil
+}
+
 // UpdateUserNewTwoNewTwo .
 func (ui *UserInfoRepo) UpdateUserNewTwoNewTwo(ctx context.Context, userId int64, amount uint64, amountRel, amountRelBrc, amountIspay float64, one, two, three string, four int64) error {
 	res := ui.data.DB(ctx).Table("user").Where("id=?", userId).
@@ -4242,6 +4301,36 @@ func (ui *UserInfoRepo) UpdateUserRewardRecommendBrc(ctx context.Context, userId
 	res = ui.data.DB(ctx).Table("reward").Create(&reward)
 	if res.Error != nil || 1 != res.RowsAffected {
 		return errors.New(500, "UPDATE_USER_ERROR", "用户信息修改失败")
+	}
+
+	return nil
+}
+
+// UpdateUserRewardRecommend2New .
+func (ui *UserInfoRepo) UpdateUserRewardRecommend2New(ctx context.Context, userId int64, usdt float64, address string) error {
+	var err error
+
+	if 0 < usdt {
+		res := ui.data.DB(ctx).Table("user_balance").
+			Where("user_id=?", userId).
+			Updates(map[string]interface{}{
+				"balance_usdt_float":    gorm.Expr("balance_usdt_float + ?", usdt),
+				"recommend_total_float": gorm.Expr("recommend_total_float + ?", usdt),
+			})
+		if res.Error != nil || 1 != res.RowsAffected {
+			return errors.New(500, "UPDATE_USER_ERROR", "用户信息修改失败")
+		}
+
+		var reward Reward
+		reward.UserId = userId
+		reward.AmountNew = usdt
+		reward.AmountNewTwo = 0
+		reward.Address = address
+		reward.Reason = "recommend" // 直推
+		res = ui.data.DB(ctx).Table("reward").Create(&reward)
+		if res.Error != nil || 1 != res.RowsAffected {
+			return err
+		}
 	}
 
 	return nil
