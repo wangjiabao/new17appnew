@@ -700,6 +700,12 @@ func (uuc *UserUseCase) UserInfo(ctx context.Context, user *User) (*v1.UserInfoR
 		goods                 []*Good
 		goodsTwo              []*Good
 		goodsThree            []*Good
+		priceOne              float64
+		priceTwo              float64
+		priceThree            float64
+		priceFour             float64
+		priceFive             float64
+		priceSix              float64
 		userAddress           []*UserAddress
 	)
 
@@ -710,6 +716,12 @@ func (uuc *UserUseCase) UserInfo(ctx context.Context, user *User) (*v1.UserInfoR
 		"withdraw_rate_two",
 		"withdraw_amount_min_two",
 		"notice",
+		"price_one",
+		"price_two",
+		"price_three",
+		"price_four",
+		"price_five",
+		"price_six",
 	)
 	if nil != configs {
 		for _, vConfig := range configs {
@@ -727,6 +739,24 @@ func (uuc *UserUseCase) UserInfo(ctx context.Context, user *User) (*v1.UserInfoR
 			}
 			if "notice" == vConfig.KeyName {
 				notice = vConfig.Value
+			}
+			if "price_one" == vConfig.KeyName {
+				priceOne, _ = strconv.ParseFloat(vConfig.Value, 10)
+			}
+			if "price_two" == vConfig.KeyName {
+				priceTwo, _ = strconv.ParseFloat(vConfig.Value, 10)
+			}
+			if "price_three" == vConfig.KeyName {
+				priceThree, _ = strconv.ParseFloat(vConfig.Value, 10)
+			}
+			if "price_four" == vConfig.KeyName {
+				priceFour, _ = strconv.ParseFloat(vConfig.Value, 10)
+			}
+			if "price_five" == vConfig.KeyName {
+				priceFive, _ = strconv.ParseFloat(vConfig.Value, 10)
+			}
+			if "price_six" == vConfig.KeyName {
+				priceSix, _ = strconv.ParseFloat(vConfig.Value, 10)
 			}
 		}
 	}
@@ -1061,6 +1091,12 @@ func (uuc *UserUseCase) UserInfo(ctx context.Context, user *User) (*v1.UserInfoR
 		GoodsThree:        resGoodsThree,
 		UserAddress:       resUserAddress,
 		RawNew:            fmt.Sprintf("%.2f", userBalance.BalanceRawFloatNew),
+		PriceOne:          fmt.Sprintf("%.2f", priceOne),
+		PriceTwo:          fmt.Sprintf("%.2f", priceTwo),
+		PriceThree:        fmt.Sprintf("%.2f", priceThree),
+		PriceFour:         fmt.Sprintf("%.2f", priceFour),
+		PriceFive:         fmt.Sprintf("%.2f", priceFive),
+		PriceSix:          fmt.Sprintf("%.2f", priceSix),
 	}, nil
 }
 
@@ -2446,10 +2482,16 @@ func (uuc *UserUseCase) Buy(ctx context.Context, req *v1.BuyRequest, user *User)
 		}, nil
 	}
 
+	if 0.0000000001 >= price {
+		return &v1.BuyReply{
+			Status: "价格太低|price error",
+		}, nil
+	}
+
 	four := int64(0)
 	// 入金
 	if err = uuc.tx.ExecTx(ctx, func(ctx context.Context) error { // 事务
-		err = uuc.uiRepo.UpdateUserNewNewNew(ctx, user.ID, amount, amountRel, amountRel*price, "", "", "", four)
+		err = uuc.uiRepo.UpdateUserNewNewNew(ctx, user.ID, amount, amountRel, amountRel/price, "", "", "", four)
 		if nil != err {
 			return err
 		}

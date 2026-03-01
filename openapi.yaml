@@ -1535,6 +1535,18 @@ components:
                     type: array
                     items:
                         $ref: '#/components/schemas/UserInfoReply_ListAddress'
+                priceOne:
+                    type: string
+                priceTwo:
+                    type: string
+                priceThree:
+                    type: string
+                priceFour:
+                    type: string
+                priceFive:
+                    type: string
+                priceSix:
+                    type: string
         UserInfoReply_List:
             type: object
             properties:
