@@ -2422,7 +2422,7 @@ func (uuc *UserUseCase) Buy(ctx context.Context, req *v1.BuyRequest, user *User)
 		}
 	}
 	amount := req.SendBody.Amount
-	if 1000 <= amount && 3000 >= amount {
+	if 50 <= amount && 3000 >= amount {
 		price = priceOne
 	} else if 5000 <= amount && 25000 >= amount {
 		price = priceTwo
