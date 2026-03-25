@@ -2370,9 +2370,9 @@ func (uuc *UserUseCase) AmountTo(ctx context.Context, req *v1.AmountToRequest, u
 func (uuc *UserUseCase) Buy(ctx context.Context, req *v1.BuyRequest, user *User) (*v1.BuyReply, error) {
 	// 推荐人
 	var (
-		err           error
-		configs       []*Config
-		priceOne      float64
+		err     error
+		configs []*Config
+		//priceOne      float64
 		priceTwo      float64
 		priceThree    float64
 		priceFour     float64
@@ -2399,9 +2399,9 @@ func (uuc *UserUseCase) Buy(ctx context.Context, req *v1.BuyRequest, user *User)
 	}
 
 	for _, vConfig := range configs {
-		if "price_one" == vConfig.KeyName {
-			priceOne, _ = strconv.ParseFloat(vConfig.Value, 10)
-		}
+		//if "price_one" == vConfig.KeyName {
+		//	priceOne, _ = strconv.ParseFloat(vConfig.Value, 10)
+		//}
 		if "price_two" == vConfig.KeyName {
 			priceTwo, _ = strconv.ParseFloat(vConfig.Value, 10)
 		}
@@ -2422,9 +2422,25 @@ func (uuc *UserUseCase) Buy(ctx context.Context, req *v1.BuyRequest, user *User)
 		}
 	}
 	amount := req.SendBody.Amount
-	if 50 <= amount && 3000 >= amount {
-		price = priceOne
-	} else if 5000 <= amount && 25000 >= amount {
+	//if 50 <= amount && 3000 >= amount {
+	//	price = priceOne
+	//} else if 5000 <= amount && 25000 >= amount {
+	//	price = priceTwo
+	//} else if 30000 <= amount && 50000 >= amount {
+	//	price = priceThree
+	//} else if 75000 <= amount && 200000 >= amount {
+	//	price = priceFour
+	//} else if 300000 <= amount && 500000 >= amount {
+	//	price = priceFive
+	//} else if 700000 <= amount && 1000000 >= amount {
+	//	price = priceSix
+	//} else {
+	//	return &v1.BuyReply{
+	//		Status: "参数错误 |err amount",
+	//	}, nil
+	//}
+
+	if 50 <= amount && 25000 >= amount {
 		price = priceTwo
 	} else if 30000 <= amount && 50000 >= amount {
 		price = priceThree
