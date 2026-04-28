@@ -1947,8 +1947,8 @@ func (uuc *UserUseCase) OrderFourList(ctx context.Context, req *v1.OrderFourList
 		res = append(res, &v1.OrderFourListReply_List{
 			CreatedAt:  vBuyRecord.CreatedAt.Add(8 * time.Hour).Format("2006-01-02 15:04:05"),
 			Amount:     uint64(vBuyRecord.Four),
-			AmountGet:  fmt.Sprintf("%.2f", vBuyRecord.AmountGet),
-			AmountLast: fmt.Sprintf("%.2f", tmpAmountGetSub),
+			AmountGet:  fmt.Sprintf("%.4f", vBuyRecord.AmountGet),
+			AmountLast: fmt.Sprintf("%.4f", tmpAmountGetSub),
 		})
 	}
 
