@@ -2855,7 +2855,7 @@ func (uuc *UserUseCase) BuyFour(ctx context.Context, req *v1.BuyRequest, user *U
 			if 0.000001 < recommendRate {
 				// 入金
 				if err = uuc.tx.ExecTx(ctx, func(ctx context.Context) error { // 事务
-					err = uuc.uiRepo.UpdateUserRewardRecommendFourNew(ctx, tmpNum, tmpUserId, amountRel*recommendRate, user.Address)
+					err = uuc.uiRepo.UpdateUserRewardRecommendFourNew(ctx, tmpNum-1, tmpUserId, amountRel*recommendRate, user.Address)
 					if err != nil {
 						fmt.Println("错误分红直推：", err)
 						return err
@@ -2870,7 +2870,7 @@ func (uuc *UserUseCase) BuyFour(ctx context.Context, req *v1.BuyRequest, user *U
 			if 0.000001 < recommendRateTwo {
 				// 入金
 				if err = uuc.tx.ExecTx(ctx, func(ctx context.Context) error { // 事务
-					err = uuc.uiRepo.UpdateUserRewardRecommendFourNew(ctx, tmpNum, tmpUserId, amountRel*recommendRateTwo, user.Address)
+					err = uuc.uiRepo.UpdateUserRewardRecommendFourNew(ctx, tmpNum-1, tmpUserId, amountRel*recommendRateTwo, user.Address)
 					if err != nil {
 						fmt.Println("错误分红直推：", err)
 						return err
