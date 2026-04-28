@@ -24,6 +24,7 @@ const OperationAppAdminWithdraw = "/api.App/AdminWithdraw"
 const OperationAppAdminWithdrawEth = "/api.App/AdminWithdrawEth"
 const OperationAppAmountTo = "/api.App/AmountTo"
 const OperationAppBuy = "/api.App/Buy"
+const OperationAppBuyFour = "/api.App/BuyFour"
 const OperationAppBuyThree = "/api.App/BuyThree"
 const OperationAppBuyTwo = "/api.App/BuyTwo"
 const OperationAppDeleteAddress = "/api.App/DeleteAddress"
@@ -34,6 +35,7 @@ const OperationAppEthAuthorize = "/api.App/EthAuthorize"
 const OperationAppExchange = "/api.App/Exchange"
 const OperationAppFeeRewardList = "/api.App/FeeRewardList"
 const OperationAppGetTrade = "/api.App/GetTrade"
+const OperationAppOrderFourList = "/api.App/OrderFourList"
 const OperationAppOrderList = "/api.App/OrderList"
 const OperationAppOrderThreeList = "/api.App/OrderThreeList"
 const OperationAppOrderTwoList = "/api.App/OrderTwoList"
@@ -90,6 +92,7 @@ type AppHTTPServer interface {
 	AdminWithdrawEth(context.Context, *AdminWithdrawEthRequest) (*AdminWithdrawEthReply, error)
 	AmountTo(context.Context, *AmountToRequest) (*AmountToReply, error)
 	Buy(context.Context, *BuyRequest) (*BuyReply, error)
+	BuyFour(context.Context, *BuyRequest) (*BuyReply, error)
 	BuyThree(context.Context, *BuyRequest) (*BuyReply, error)
 	BuyTwo(context.Context, *BuyRequest) (*BuyReply, error)
 	DeleteAddress(context.Context, *DeleteAddressRequest) (*DeleteAddressReply, error)
@@ -101,6 +104,8 @@ type AppHTTPServer interface {
 	Exchange(context.Context, *ExchangeRequest) (*ExchangeReply, error)
 	FeeRewardList(context.Context, *FeeRewardListRequest) (*FeeRewardListReply, error)
 	GetTrade(context.Context, *GetTradeRequest) (*GetTradeReply, error)
+	// OrderFourList  订单
+	OrderFourList(context.Context, *OrderFourListRequest) (*OrderFourListReply, error)
 	// OrderList  订单
 	OrderList(context.Context, *OrderListRequest) (*OrderListReply, error)
 	OrderThreeList(context.Context, *OrderTwoListRequest) (*OrderTwoListReply, error)
@@ -139,12 +144,14 @@ func RegisterAppHTTPServer(s *http.Server, srv AppHTTPServer) {
 	r.POST("/api/app_server/set_address", _App_SetAddress0_HTTP_Handler(srv))
 	r.POST("/api/app_server/delete_address", _App_DeleteAddress0_HTTP_Handler(srv))
 	r.POST("/api/app_server/buy_three", _App_BuyThree0_HTTP_Handler(srv))
+	r.POST("/api/app_server/buy_four", _App_BuyFour0_HTTP_Handler(srv))
 	r.POST("/api/app_server/set_today", _App_SetToday0_HTTP_Handler(srv))
 	r.GET("/api/app_server/set_today_list", _App_SetTodayList0_HTTP_Handler(srv))
 	r.POST("/api/app_server/withdraw", _App_Withdraw0_HTTP_Handler(srv))
 	r.POST("/api/app_server/set_info", _App_SetInfo0_HTTP_Handler(srv))
 	r.GET("/api/app_server/withdraw_list", _App_WithdrawList0_HTTP_Handler(srv))
 	r.GET("/api/app_server/order_list", _App_OrderList0_HTTP_Handler(srv))
+	r.GET("/api/app_server/order_four_list", _App_OrderFourList0_HTTP_Handler(srv))
 	r.GET("/api/app_server/order_two_list", _App_OrderTwoList0_HTTP_Handler(srv))
 	r.GET("/api/app_server/order_three_list", _App_OrderThreeList0_HTTP_Handler(srv))
 	r.GET("/api/app_server/reward_list", _App_RewardList0_HTTP_Handler(srv))
@@ -342,6 +349,28 @@ func _App_BuyThree0_HTTP_Handler(srv AppHTTPServer) func(ctx http.Context) error
 	}
 }
 
+func _App_BuyFour0_HTTP_Handler(srv AppHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in BuyRequest
+		if err := ctx.Bind(&in.SendBody); err != nil {
+			return err
+		}
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationAppBuyFour)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.BuyFour(ctx, req.(*BuyRequest))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*BuyReply)
+		return ctx.Result(200, reply)
+	}
+}
+
 func _App_SetToday0_HTTP_Handler(srv AppHTTPServer) func(ctx http.Context) error {
 	return func(ctx http.Context) error {
 		var in SetTodayRequest
@@ -461,6 +490,25 @@ func _App_OrderList0_HTTP_Handler(srv AppHTTPServer) func(ctx http.Context) erro
 			return err
 		}
 		reply := out.(*OrderListReply)
+		return ctx.Result(200, reply)
+	}
+}
+
+func _App_OrderFourList0_HTTP_Handler(srv AppHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in OrderFourListRequest
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationAppOrderFourList)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.OrderFourList(ctx, req.(*OrderFourListRequest))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*OrderFourListReply)
 		return ctx.Result(200, reply)
 	}
 }
@@ -979,6 +1027,7 @@ type AppHTTPClient interface {
 	AdminWithdrawEth(ctx context.Context, req *AdminWithdrawEthRequest, opts ...http.CallOption) (rsp *AdminWithdrawEthReply, err error)
 	AmountTo(ctx context.Context, req *AmountToRequest, opts ...http.CallOption) (rsp *AmountToReply, err error)
 	Buy(ctx context.Context, req *BuyRequest, opts ...http.CallOption) (rsp *BuyReply, err error)
+	BuyFour(ctx context.Context, req *BuyRequest, opts ...http.CallOption) (rsp *BuyReply, err error)
 	BuyThree(ctx context.Context, req *BuyRequest, opts ...http.CallOption) (rsp *BuyReply, err error)
 	BuyTwo(ctx context.Context, req *BuyRequest, opts ...http.CallOption) (rsp *BuyReply, err error)
 	DeleteAddress(ctx context.Context, req *DeleteAddressRequest, opts ...http.CallOption) (rsp *DeleteAddressReply, err error)
@@ -989,6 +1038,7 @@ type AppHTTPClient interface {
 	Exchange(ctx context.Context, req *ExchangeRequest, opts ...http.CallOption) (rsp *ExchangeReply, err error)
 	FeeRewardList(ctx context.Context, req *FeeRewardListRequest, opts ...http.CallOption) (rsp *FeeRewardListReply, err error)
 	GetTrade(ctx context.Context, req *GetTradeRequest, opts ...http.CallOption) (rsp *GetTradeReply, err error)
+	OrderFourList(ctx context.Context, req *OrderFourListRequest, opts ...http.CallOption) (rsp *OrderFourListReply, err error)
 	OrderList(ctx context.Context, req *OrderListRequest, opts ...http.CallOption) (rsp *OrderListReply, err error)
 	OrderThreeList(ctx context.Context, req *OrderTwoListRequest, opts ...http.CallOption) (rsp *OrderTwoListReply, err error)
 	OrderTwoList(ctx context.Context, req *OrderTwoListRequest, opts ...http.CallOption) (rsp *OrderTwoListReply, err error)
@@ -1080,6 +1130,19 @@ func (c *AppHTTPClientImpl) Buy(ctx context.Context, in *BuyRequest, opts ...htt
 	pattern := "/api/app_server/buy"
 	path := binding.EncodeURL(pattern, in, false)
 	opts = append(opts, http.Operation(OperationAppBuy))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "POST", path, in.SendBody, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, err
+}
+
+func (c *AppHTTPClientImpl) BuyFour(ctx context.Context, in *BuyRequest, opts ...http.CallOption) (*BuyReply, error) {
+	var out BuyReply
+	pattern := "/api/app_server/buy_four"
+	path := binding.EncodeURL(pattern, in, false)
+	opts = append(opts, http.Operation(OperationAppBuyFour))
 	opts = append(opts, http.PathTemplate(pattern))
 	err := c.cc.Invoke(ctx, "POST", path, in.SendBody, &out, opts...)
 	if err != nil {
@@ -1212,6 +1275,19 @@ func (c *AppHTTPClientImpl) GetTrade(ctx context.Context, in *GetTradeRequest, o
 	opts = append(opts, http.Operation(OperationAppGetTrade))
 	opts = append(opts, http.PathTemplate(pattern))
 	err := c.cc.Invoke(ctx, "POST", path, in.SendBody, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, err
+}
+
+func (c *AppHTTPClientImpl) OrderFourList(ctx context.Context, in *OrderFourListRequest, opts ...http.CallOption) (*OrderFourListReply, error) {
+	var out OrderFourListReply
+	pattern := "/api/app_server/order_four_list"
+	path := binding.EncodeURL(pattern, in, true)
+	opts = append(opts, http.Operation(OperationAppOrderFourList))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "GET", path, nil, &out, opts...)
 	if err != nil {
 		return nil, err
 	}

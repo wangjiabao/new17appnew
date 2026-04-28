@@ -64,6 +64,13 @@ service App {
 		};
 	};
 
+	rpc BuyFour (BuyRequest) returns (BuyReply) {
+		option (google.api.http) = {
+			post: "/api/app_server/buy_four"
+			body: "send_body"
+		};
+	};
+
 	rpc SetToday (SetTodayRequest) returns (SetTodayReply) {
 		option (google.api.http) = {
 			post: "/api/app_server/set_today"
@@ -101,6 +108,13 @@ service App {
 	rpc OrderList (OrderListRequest) returns (OrderListReply) {
 		option (google.api.http) = {
 			get: "/api/app_server/order_list"
+		};
+	};
+
+	//  订单
+	rpc OrderFourList (OrderFourListRequest) returns (OrderFourListReply) {
+		option (google.api.http) = {
+			get: "/api/app_server/order_four_list"
 		};
 	};
 
@@ -578,7 +592,7 @@ message DepositListReply {
 
 message RewardListRequest {
 	uint64 page = 1; // 页数
-	uint64 reqType = 2; // 类型：1认购，9医疗商品认购，10web3认购，2静态收益，3直推收益，4直推加速收益，5团代收益，6平级收益，7全网收益，8赠送ispay
+	uint64 reqType = 2; // 类型：1认购，9医疗商品认购，10web3认购，2静态收益，3直推收益，4直推加速收益，5团代收益，6平级收益，7全网收益，8赠送ispay，12长寿商店认购推荐收益，13长寿商店认购
 }
 
 message RewardListReply {
@@ -683,6 +697,22 @@ message OrderListReply {
 		string five = 14; // 商品描述
 		string six = 15; // 商品图片
 
+	}
+}
+
+message OrderFourListRequest {
+	uint64 page = 1; // 页数
+}
+
+message OrderFourListReply {
+	uint64 count = 3; // 总数，每页20
+	string status = 2;
+	repeated List list = 1;
+	message List {
+		string createdAt = 1; // 时间
+		uint64 amount = 2; // 金额
+		string amountGet = 4; // 已释放
+		string amountLast = 5; // 待释放
 	}
 }
 

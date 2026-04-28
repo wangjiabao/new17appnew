@@ -27,12 +27,14 @@ const (
 	App_SetAddress_FullMethodName          = "/api.App/SetAddress"
 	App_DeleteAddress_FullMethodName       = "/api.App/DeleteAddress"
 	App_BuyThree_FullMethodName            = "/api.App/BuyThree"
+	App_BuyFour_FullMethodName             = "/api.App/BuyFour"
 	App_SetToday_FullMethodName            = "/api.App/SetToday"
 	App_SetTodayList_FullMethodName        = "/api.App/SetTodayList"
 	App_Withdraw_FullMethodName            = "/api.App/Withdraw"
 	App_SetInfo_FullMethodName             = "/api.App/SetInfo"
 	App_WithdrawList_FullMethodName        = "/api.App/WithdrawList"
 	App_OrderList_FullMethodName           = "/api.App/OrderList"
+	App_OrderFourList_FullMethodName       = "/api.App/OrderFourList"
 	App_OrderTwoList_FullMethodName        = "/api.App/OrderTwoList"
 	App_OrderThreeList_FullMethodName      = "/api.App/OrderThreeList"
 	App_RewardList_FullMethodName          = "/api.App/RewardList"
@@ -72,6 +74,7 @@ type AppClient interface {
 	SetAddress(ctx context.Context, in *SetAddressRequest, opts ...grpc.CallOption) (*SetAddressReply, error)
 	DeleteAddress(ctx context.Context, in *DeleteAddressRequest, opts ...grpc.CallOption) (*DeleteAddressReply, error)
 	BuyThree(ctx context.Context, in *BuyRequest, opts ...grpc.CallOption) (*BuyReply, error)
+	BuyFour(ctx context.Context, in *BuyRequest, opts ...grpc.CallOption) (*BuyReply, error)
 	SetToday(ctx context.Context, in *SetTodayRequest, opts ...grpc.CallOption) (*SetTodayReply, error)
 	SetTodayList(ctx context.Context, in *SetTodayListRequest, opts ...grpc.CallOption) (*SetTodayListReply, error)
 	Withdraw(ctx context.Context, in *WithdrawRequest, opts ...grpc.CallOption) (*WithdrawReply, error)
@@ -79,6 +82,8 @@ type AppClient interface {
 	WithdrawList(ctx context.Context, in *WithdrawListRequest, opts ...grpc.CallOption) (*WithdrawListReply, error)
 	// 订单
 	OrderList(ctx context.Context, in *OrderListRequest, opts ...grpc.CallOption) (*OrderListReply, error)
+	// 订单
+	OrderFourList(ctx context.Context, in *OrderFourListRequest, opts ...grpc.CallOption) (*OrderFourListReply, error)
 	OrderTwoList(ctx context.Context, in *OrderTwoListRequest, opts ...grpc.CallOption) (*OrderTwoListReply, error)
 	OrderThreeList(ctx context.Context, in *OrderTwoListRequest, opts ...grpc.CallOption) (*OrderTwoListReply, error)
 	// 交易明细
@@ -211,6 +216,15 @@ func (c *appClient) BuyThree(ctx context.Context, in *BuyRequest, opts ...grpc.C
 	return out, nil
 }
 
+func (c *appClient) BuyFour(ctx context.Context, in *BuyRequest, opts ...grpc.CallOption) (*BuyReply, error) {
+	out := new(BuyReply)
+	err := c.cc.Invoke(ctx, App_BuyFour_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *appClient) SetToday(ctx context.Context, in *SetTodayRequest, opts ...grpc.CallOption) (*SetTodayReply, error) {
 	out := new(SetTodayReply)
 	err := c.cc.Invoke(ctx, App_SetToday_FullMethodName, in, out, opts...)
@@ -259,6 +273,15 @@ func (c *appClient) WithdrawList(ctx context.Context, in *WithdrawListRequest, o
 func (c *appClient) OrderList(ctx context.Context, in *OrderListRequest, opts ...grpc.CallOption) (*OrderListReply, error) {
 	out := new(OrderListReply)
 	err := c.cc.Invoke(ctx, App_OrderList_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *appClient) OrderFourList(ctx context.Context, in *OrderFourListRequest, opts ...grpc.CallOption) (*OrderFourListReply, error) {
+	out := new(OrderFourListReply)
+	err := c.cc.Invoke(ctx, App_OrderFourList_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -502,6 +525,7 @@ type AppServer interface {
 	SetAddress(context.Context, *SetAddressRequest) (*SetAddressReply, error)
 	DeleteAddress(context.Context, *DeleteAddressRequest) (*DeleteAddressReply, error)
 	BuyThree(context.Context, *BuyRequest) (*BuyReply, error)
+	BuyFour(context.Context, *BuyRequest) (*BuyReply, error)
 	SetToday(context.Context, *SetTodayRequest) (*SetTodayReply, error)
 	SetTodayList(context.Context, *SetTodayListRequest) (*SetTodayListReply, error)
 	Withdraw(context.Context, *WithdrawRequest) (*WithdrawReply, error)
@@ -509,6 +533,8 @@ type AppServer interface {
 	WithdrawList(context.Context, *WithdrawListRequest) (*WithdrawListReply, error)
 	// 订单
 	OrderList(context.Context, *OrderListRequest) (*OrderListReply, error)
+	// 订单
+	OrderFourList(context.Context, *OrderFourListRequest) (*OrderFourListReply, error)
 	OrderTwoList(context.Context, *OrderTwoListRequest) (*OrderTwoListReply, error)
 	OrderThreeList(context.Context, *OrderTwoListRequest) (*OrderTwoListReply, error)
 	// 交易明细
@@ -590,6 +616,9 @@ func (UnimplementedAppServer) DeleteAddress(context.Context, *DeleteAddressReque
 func (UnimplementedAppServer) BuyThree(context.Context, *BuyRequest) (*BuyReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method BuyThree not implemented")
 }
+func (UnimplementedAppServer) BuyFour(context.Context, *BuyRequest) (*BuyReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method BuyFour not implemented")
+}
 func (UnimplementedAppServer) SetToday(context.Context, *SetTodayRequest) (*SetTodayReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SetToday not implemented")
 }
@@ -607,6 +636,9 @@ func (UnimplementedAppServer) WithdrawList(context.Context, *WithdrawListRequest
 }
 func (UnimplementedAppServer) OrderList(context.Context, *OrderListRequest) (*OrderListReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method OrderList not implemented")
+}
+func (UnimplementedAppServer) OrderFourList(context.Context, *OrderFourListRequest) (*OrderFourListReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method OrderFourList not implemented")
 }
 func (UnimplementedAppServer) OrderTwoList(context.Context, *OrderTwoListRequest) (*OrderTwoListReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method OrderTwoList not implemented")
@@ -840,6 +872,24 @@ func _App_BuyThree_Handler(srv interface{}, ctx context.Context, dec func(interf
 	return interceptor(ctx, in, info, handler)
 }
 
+func _App_BuyFour_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(BuyRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AppServer).BuyFour(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: App_BuyFour_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AppServer).BuyFour(ctx, req.(*BuyRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _App_SetToday_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(SetTodayRequest)
 	if err := dec(in); err != nil {
@@ -944,6 +994,24 @@ func _App_OrderList_Handler(srv interface{}, ctx context.Context, dec func(inter
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(AppServer).OrderList(ctx, req.(*OrderListRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _App_OrderFourList_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(OrderFourListRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AppServer).OrderFourList(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: App_OrderFourList_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AppServer).OrderFourList(ctx, req.(*OrderFourListRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -1438,6 +1506,10 @@ var App_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _App_BuyThree_Handler,
 		},
 		{
+			MethodName: "BuyFour",
+			Handler:    _App_BuyFour_Handler,
+		},
+		{
 			MethodName: "SetToday",
 			Handler:    _App_SetToday_Handler,
 		},
@@ -1460,6 +1532,10 @@ var App_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "OrderList",
 			Handler:    _App_OrderList_Handler,
+		},
+		{
+			MethodName: "OrderFourList",
+			Handler:    _App_OrderFourList_Handler,
 		},
 		{
 			MethodName: "OrderTwoList",
