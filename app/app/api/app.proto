@@ -573,6 +573,8 @@ message UserInfoReply {
 	string priceFour = 143;
 	string priceFive = 144;
 	string priceSix = 145;
+
+	string ispayAmount = 155;
 }
 
 message DepositListRequest {

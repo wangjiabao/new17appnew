@@ -37,6 +37,7 @@ type User struct {
 	MyTotalAmount          float64   `gorm:"type:decimal(65,20);not null"`
 	AmountUsdtGet          float64   `gorm:"type:decimal(65,20);not null"`
 	AmountRecommendUsdtGet float64   `gorm:"type:decimal(65,20);not null"`
+	IspayNew               float64   `gorm:"type:decimal(65,20);not null"`
 	Last                   uint64    `gorm:"type:bigint;not null"`
 	LastBiw                uint64    `gorm:"type:bigint;not null"`
 	RecommendUserReward    int64     `gorm:"type:int;not null"`
@@ -1225,6 +1226,7 @@ func (u *UserRepo) GetUserById(ctx context.Context, Id int64) (*biz.User, error)
 		RecommendUser:          user.RecommendUser,
 		RecommendUserReward:    user.RecommendUserReward,
 		RecommendUserH:         user.RecommendUserH,
+		IspayNew:               user.IspayNew,
 	}, nil
 }
 
@@ -1492,6 +1494,7 @@ func (u *UserRepo) GetAllUsers(ctx context.Context) ([]*biz.User, error) {
 			Five:                   item.FiveNew,
 			Six:                    item.SixNew,
 			Seven:                  item.SevenNew,
+			IspayNew:               item.IspayNew,
 		})
 	}
 	return res, nil
@@ -2694,6 +2697,29 @@ func (ub *UserBalanceRepo) ToAddressAmountRaw(ctx context.Context, userId int64,
 	reward.Reason = "to_amount" // 给我分红的理由
 	reward.Address = address
 	err = ub.data.DB(ctx).Table("reward").Create(&reward).Error
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// WithdrawISPAYNew .
+func (ub *UserBalanceRepo) WithdrawISPAYNew(ctx context.Context, userId int64, amount float64) error {
+	var err error
+	if res := ub.data.DB(ctx).Table("user").
+		Where("id=? and ispay_new>=?", userId, amount).
+		Updates(map[string]interface{}{"ispay_new": gorm.Expr("ispay_new - ?", amount)}); res.Error != nil || 1 != res.RowsAffected {
+		return errors.NotFound("user balance err", "user balance error")
+	}
+
+	var userBalanceRecode UserBalanceRecord
+	userBalanceRecode.Balance = 0
+	userBalanceRecode.UserId = userId
+	userBalanceRecode.Type = "withdraw"
+	userBalanceRecode.CoinType = "RAW_NEW"
+	userBalanceRecode.AmountNew = amount
+	err = ub.data.DB(ctx).Table("user_balance_record").Create(&userBalanceRecode).Error
 	if err != nil {
 		return err
 	}
