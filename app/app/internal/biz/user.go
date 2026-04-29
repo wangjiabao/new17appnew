@@ -1850,7 +1850,7 @@ func (uuc *UserUseCase) WithdrawList(ctx context.Context, req *v1.WithdrawListRe
 	for _, v := range withdraws {
 		res.List = append(res.List, &v1.WithdrawListReply_List{
 			CreatedAt: v.CreatedAt.Add(8 * time.Hour).Format("2006-01-02 15:04:05"),
-			Amount:    fmt.Sprintf("%.2f", v.AmountNew),
+			Amount:    fmt.Sprintf("%.4f", v.AmountNew),
 		})
 	}
 
