@@ -802,7 +802,7 @@ message ExchangeReply {
 
 message WithdrawRequest {
 	message SendBody{
-		uint64 amount = 1;
+		double amount = 1;
 		string sign = 4;
 		uint64 coinType = 2;
 	}

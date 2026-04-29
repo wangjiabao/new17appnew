@@ -4482,7 +4482,7 @@ func (uuc *UserUseCase) Withdraw(ctx context.Context, req *v1.WithdrawRequest, u
 			Status: "暂未开放",
 		}, nil
 
-		amountFloat := float64(req.SendBody.Amount)
+		amountFloat := req.SendBody.Amount
 		if userBalance.BalanceRawFloatNew < amountFloat {
 			return &v1.WithdrawReply{
 				Status: "可提余额不足",
@@ -4525,7 +4525,7 @@ func (uuc *UserUseCase) Withdraw(ctx context.Context, req *v1.WithdrawRequest, u
 			}, nil
 		}
 	} else if 3 == req.SendBody.CoinType {
-		amountFloat := float64(req.SendBody.Amount)
+		amountFloat := req.SendBody.Amount
 		if user.IspayNew < amountFloat {
 			return &v1.WithdrawReply{
 				Status: "可提余额不足",
@@ -4562,7 +4562,7 @@ func (uuc *UserUseCase) Withdraw(ctx context.Context, req *v1.WithdrawRequest, u
 			}, nil
 		}
 	} else {
-		amountFloat := float64(req.SendBody.Amount)
+		amountFloat := req.SendBody.Amount
 		if userBalance.BalanceUsdtFloat < amountFloat {
 			return &v1.WithdrawReply{
 				Status: "可提余额不足",
