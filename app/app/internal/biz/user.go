@@ -2668,13 +2668,21 @@ func (uuc *UserUseCase) Buy(ctx context.Context, req *v1.BuyRequest, user *User)
 func (uuc *UserUseCase) BuyFour(ctx context.Context, req *v1.BuyRequest, user *User) (*v1.BuyReply, error) {
 	// 推荐人
 	var (
-		err              error
-		configs          []*Config
-		priceOne         float64
-		priceTwo         float64
-		priceThree       float64
-		recommendRate    float64
-		recommendRateTwo float64
+		err                error
+		configs            []*Config
+		priceOne           float64
+		priceTwo           float64
+		priceThree         float64
+		recommendRate      float64
+		recommendRateTwo   float64
+		recommendRateThree float64
+		recommendRateFour  float64
+		recommendRateFive  float64
+		recommendRateSix   float64
+		recommendRateSeven float64
+		recommendRateEight float64
+		recommendRateNine  float64
+		recommendRateTen   float64
 	)
 
 	// 配置
@@ -2684,6 +2692,14 @@ func (uuc *UserUseCase) BuyFour(ctx context.Context, req *v1.BuyRequest, user *U
 		"b_price_three_three",
 		"recommend_reward_rate_one",
 		"recommend_reward_rate_two",
+		"recommend_reward_rate_three",
+		"recommend_reward_rate_four",
+		"recommend_reward_rate_five",
+		"recommend_reward_rate_six",
+		"recommend_reward_rate_seven",
+		"recommend_reward_rate_eight",
+		"recommend_reward_rate_nine",
+		"recommend_reward_rate_ten",
 	)
 	if nil != err || nil == configs {
 		return &v1.BuyReply{
@@ -2706,6 +2722,30 @@ func (uuc *UserUseCase) BuyFour(ctx context.Context, req *v1.BuyRequest, user *U
 		}
 		if "recommend_reward_rate_two" == vConfig.KeyName {
 			recommendRateTwo, _ = strconv.ParseFloat(vConfig.Value, 10)
+		}
+		if "recommend_reward_rate_three" == vConfig.KeyName {
+			recommendRateThree, _ = strconv.ParseFloat(vConfig.Value, 10)
+		}
+		if "recommend_reward_rate_four" == vConfig.KeyName {
+			recommendRateFour, _ = strconv.ParseFloat(vConfig.Value, 10)
+		}
+		if "recommend_reward_rate_five" == vConfig.KeyName {
+			recommendRateFive, _ = strconv.ParseFloat(vConfig.Value, 10)
+		}
+		if "recommend_reward_rate_six" == vConfig.KeyName {
+			recommendRateSix, _ = strconv.ParseFloat(vConfig.Value, 10)
+		}
+		if "recommend_reward_rate_seven" == vConfig.KeyName {
+			recommendRateSeven, _ = strconv.ParseFloat(vConfig.Value, 10)
+		}
+		if "recommend_reward_rate_eight" == vConfig.KeyName {
+			recommendRateEight, _ = strconv.ParseFloat(vConfig.Value, 10)
+		}
+		if "recommend_reward_rate_nine" == vConfig.KeyName {
+			recommendRateNine, _ = strconv.ParseFloat(vConfig.Value, 10)
+		}
+		if "recommend_reward_rate_ten" == vConfig.KeyName {
+			recommendRateTen, _ = strconv.ParseFloat(vConfig.Value, 10)
 		}
 	}
 
@@ -2867,10 +2907,33 @@ func (uuc *UserUseCase) BuyFour(ctx context.Context, req *v1.BuyRequest, user *U
 				}
 			}
 		} else {
-			if 0.000001 < recommendRateTwo {
+			recommendRateTmp := float64(0)
+			if 2 == tmpNum {
+				recommendRateTmp = recommendRateTwo
+			} else if 3 == tmpNum {
+				recommendRateTmp = recommendRateThree
+			} else if 4 == tmpNum {
+				recommendRateTmp = recommendRateFour
+			} else if 5 == tmpNum {
+				recommendRateTmp = recommendRateFive
+			} else if 6 == tmpNum {
+				recommendRateTmp = recommendRateSix
+			} else if 7 == tmpNum {
+				recommendRateTmp = recommendRateSeven
+			} else if 8 == tmpNum {
+				recommendRateTmp = recommendRateEight
+			} else if 9 == tmpNum {
+				recommendRateTmp = recommendRateNine
+			} else if 10 == tmpNum {
+				recommendRateTmp = recommendRateTen
+			} else {
+				continue
+			}
+
+			if 0.000001 < recommendRateTmp {
 				// 入金
 				if err = uuc.tx.ExecTx(ctx, func(ctx context.Context) error { // 事务
-					err = uuc.uiRepo.UpdateUserRewardRecommendFourNew(ctx, tmpNum-1, tmpUserId, amountRel*recommendRateTwo, user.Address)
+					err = uuc.uiRepo.UpdateUserRewardRecommendFourNew(ctx, tmpNum-1, tmpUserId, amountRel*recommendRateTmp, user.Address)
 					if err != nil {
 						fmt.Println("错误分红直推：", err)
 						return err
