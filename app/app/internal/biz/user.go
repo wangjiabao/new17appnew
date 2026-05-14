@@ -2908,23 +2908,23 @@ func (uuc *UserUseCase) BuyFour(ctx context.Context, req *v1.BuyRequest, user *U
 			}
 		} else {
 			recommendRateTmp := float64(0)
-			if 2 == tmpNum {
+			if 3 == tmpNum {
 				recommendRateTmp = recommendRateTwo
-			} else if 3 == tmpNum {
-				recommendRateTmp = recommendRateThree
 			} else if 4 == tmpNum {
-				recommendRateTmp = recommendRateFour
+				recommendRateTmp = recommendRateThree
 			} else if 5 == tmpNum {
-				recommendRateTmp = recommendRateFive
+				recommendRateTmp = recommendRateFour
 			} else if 6 == tmpNum {
-				recommendRateTmp = recommendRateSix
+				recommendRateTmp = recommendRateFive
 			} else if 7 == tmpNum {
-				recommendRateTmp = recommendRateSeven
+				recommendRateTmp = recommendRateSix
 			} else if 8 == tmpNum {
-				recommendRateTmp = recommendRateEight
+				recommendRateTmp = recommendRateSeven
 			} else if 9 == tmpNum {
-				recommendRateTmp = recommendRateNine
+				recommendRateTmp = recommendRateEight
 			} else if 10 == tmpNum {
+				recommendRateTmp = recommendRateNine
+			} else if 11 == tmpNum {
 				recommendRateTmp = recommendRateTen
 			} else {
 				continue
