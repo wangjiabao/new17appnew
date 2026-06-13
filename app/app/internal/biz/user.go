@@ -2850,6 +2850,31 @@ func (uuc *UserUseCase) BuyFour(ctx context.Context, req *v1.BuyRequest, user *U
 	}
 
 	totalTmp := len(tmpRecommendUserIds) - 1
+	for i := totalTmp; i >= 0; i-- {
+		tmpUserId, _ := strconv.ParseInt(tmpRecommendUserIds[i], 10, 64) // 最后一位是直推人
+		if 0 >= tmpUserId {
+			continue
+		}
+
+		if _, ok := usersMap[tmpUserId]; !ok {
+			fmt.Println("buy遍历，信息缺失,user：", err, tmpUserId)
+			continue
+		}
+
+		// 增加业绩
+		if err = uuc.tx.ExecTx(ctx, func(ctx context.Context) error { // 事务
+			err = uuc.uiRepo.UpdateUserMyTotalAmountAdd(ctx, tmpUserId, float64(amount), 0)
+			if err != nil {
+				return err
+			}
+
+			return nil
+		}); nil != err {
+			fmt.Println("遍历业绩：", err, tmpUserId, user)
+			continue
+		}
+	}
+
 	tmpNum := int64(1)
 	for i := totalTmp; i >= 0; i-- {
 		if 11 == tmpNum {
@@ -2868,19 +2893,6 @@ func (uuc *UserUseCase) BuyFour(ctx context.Context, req *v1.BuyRequest, user *U
 		}
 
 		if 1 == usersMap[tmpUserId].Lock {
-			continue
-		}
-
-		// 增加业绩
-		if err = uuc.tx.ExecTx(ctx, func(ctx context.Context) error { // 事务
-			err = uuc.uiRepo.UpdateUserMyTotalAmountAdd(ctx, tmpUserId, float64(amount), 0)
-			if err != nil {
-				return err
-			}
-
-			return nil
-		}); nil != err {
-			fmt.Println("遍历业绩：", err, tmpUserId, user)
 			continue
 		}
 
