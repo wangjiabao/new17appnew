@@ -53,6 +53,7 @@ type User struct {
 	AmountFour             float64   `gorm:"type:decimal(65,20);not null"`
 	AmountFourGet          float64   `gorm:"type:decimal(65,20);not null"`
 	AmountSelf             uint64    `gorm:"type:bigint;not null"`
+	AmountFourNew          float64   `gorm:"type:decimal(65,20);not null"`
 }
 
 type Total struct {
@@ -1429,6 +1430,7 @@ func (u *UserRepo) GetUserByUserIdsTwo(ctx context.Context, userIds []int64) (ma
 			RecommendUser:          item.RecommendUser,
 			RecommendUserReward:    item.RecommendUserReward,
 			RecommendUserH:         item.RecommendUserH,
+			AmountFourNew:          item.AmountFourNew,
 		}
 	}
 	return res, nil
