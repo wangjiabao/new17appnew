@@ -1617,6 +1617,12 @@ components:
                     type: string
                 priceSix:
                     type: string
+                priceOneNew:
+                    type: string
+                priceTwoNew:
+                    type: string
+                priceThreeNew:
+                    type: string
                 ispayAmount:
                     type: string
         UserInfoReply_List:

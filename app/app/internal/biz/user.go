@@ -728,6 +728,9 @@ func (uuc *UserUseCase) UserInfo(ctx context.Context, user *User) (*v1.UserInfoR
 		priceFour             float64
 		priceFive             float64
 		priceSix              float64
+		priceOneNew           float64
+		priceTwoNew           float64
+		priceThreeNew         float64
 		userAddress           []*UserAddress
 	)
 
@@ -744,6 +747,9 @@ func (uuc *UserUseCase) UserInfo(ctx context.Context, user *User) (*v1.UserInfoR
 		"price_four",
 		"price_five",
 		"price_six",
+		"b_price_three_one",
+		"b_price_three_two",
+		"b_price_three_three",
 	)
 	if nil != configs {
 		for _, vConfig := range configs {
@@ -779,6 +785,15 @@ func (uuc *UserUseCase) UserInfo(ctx context.Context, user *User) (*v1.UserInfoR
 			}
 			if "price_six" == vConfig.KeyName {
 				priceSix, _ = strconv.ParseFloat(vConfig.Value, 10)
+			}
+			if "b_price_three_one" == vConfig.KeyName {
+				priceOneNew, _ = strconv.ParseFloat(vConfig.Value, 10)
+			}
+			if "b_price_three_two" == vConfig.KeyName {
+				priceTwoNew, _ = strconv.ParseFloat(vConfig.Value, 10)
+			}
+			if "b_price_three_three" == vConfig.KeyName {
+				priceThreeNew, _ = strconv.ParseFloat(vConfig.Value, 10)
 			}
 		}
 	}
@@ -1119,6 +1134,9 @@ func (uuc *UserUseCase) UserInfo(ctx context.Context, user *User) (*v1.UserInfoR
 		PriceFour:         fmt.Sprintf("%.2f", priceFour),
 		PriceFive:         fmt.Sprintf("%.2f", priceFive),
 		PriceSix:          fmt.Sprintf("%.2f", priceSix),
+		PriceOneNew:       fmt.Sprintf("%.4f", priceOneNew),
+		PriceTwoNew:       fmt.Sprintf("%.4f", priceTwoNew),
+		PriceThreeNew:     fmt.Sprintf("%.4f", priceThreeNew),
 		IspayAmount:       fmt.Sprintf("%.4f", myUser.IspayNew),
 	}, nil
 }

@@ -573,7 +573,9 @@ message UserInfoReply {
 	string priceFour = 143;
 	string priceFive = 144;
 	string priceSix = 145;
-
+	string priceOneNew = 146;
+	string priceTwoNew = 147;
+	string priceThreeNew = 148;
 	string ispayAmount = 155;
 }
 
