@@ -2921,7 +2921,46 @@ func (uuc *UserUseCase) BuyFour(ctx context.Context, req *v1.BuyRequest, user *U
 
 		// 直推
 
+		// 推荐人
+		var (
+			userRecommendNew *UserRecommend
+		)
+		userRecommendNew, err = uuc.urRepo.GetUserRecommendByUserId(ctx, tmpUserId)
+		if nil != err || nil == userRecommendNew {
+			fmt.Println("buy遍历，信息缺失,user recommend：", err, tmpUserId)
+			continue
+		}
+
+		var (
+			userRecommends []*UserRecommend
+		)
+		userRecommends, err = uuc.urRepo.GetUserRecommendByCode(ctx, userRecommendNew.RecommendCode+"D"+strconv.FormatInt(tmpUserId, 10))
+		if nil != err {
+			fmt.Println("buy遍历，信息缺失,user recommend：", err, tmpUserId)
+			continue
+		}
+
 		tmpRecommendUser := usersMap[tmpUserId]
+		if nil == tmpRecommendUser || 0.1 >= tmpRecommendUser.AmountFourNew {
+			continue
+		}
+
+		tmpNumNum := tmpNum - 2
+		if tmpNumNum > int64(len(userRecommends)) {
+			continue
+		}
+		totalNum := int64(0)
+		for _, vUserRecommends := range userRecommends {
+			if _, ok := usersMap[vUserRecommends.UserId]; ok {
+				if 0.1 < usersMap[vUserRecommends.UserId].AmountFourNew {
+					totalNum++
+				}
+			}
+		}
+		if tmpNumNum > totalNum {
+			continue
+		}
+
 		if i == totalTmp {
 			if 0.000001 < recommendRate {
 				// 入金
