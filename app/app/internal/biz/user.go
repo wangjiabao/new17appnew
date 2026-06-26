@@ -1703,6 +1703,8 @@ func (uuc *UserUseCase) RewardList(ctx context.Context, req *v1.RewardListReques
 		reason = "recommend_four_new"
 	} else if 14 == req.ReqType {
 		reason = "ispay_reward"
+	} else if 15 == req.ReqType {
+		reason = "daily_area_new"
 	}
 
 	userRewards, err, count = uuc.ubRepo.GetUserRewardByUserIdPage(ctx, &Pagination{
