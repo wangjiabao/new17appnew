@@ -4719,6 +4719,7 @@ func (ub *UserBalanceRepo) GetAllUsersB(ctx context.Context) ([]*biz.User, error
 			Six:                    item.SixNew,
 			Seven:                  item.SevenNew,
 			AmountSelf:             item.AmountSelf,
+			AmountFourNew:          item.AmountFourNew,
 		})
 	}
 	return res, nil
