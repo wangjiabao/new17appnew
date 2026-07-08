@@ -54,6 +54,7 @@ type User struct {
 	AmountFourGet          float64   `gorm:"type:decimal(65,20);not null"`
 	AmountSelf             uint64    `gorm:"type:bigint;not null"`
 	AmountFourNew          float64   `gorm:"type:decimal(65,20);not null"`
+	OldUser                int64     `gorm:"type:int;not null"`
 }
 
 type Total struct {
@@ -4720,6 +4721,7 @@ func (ub *UserBalanceRepo) GetAllUsersB(ctx context.Context) ([]*biz.User, error
 			Seven:                  item.SevenNew,
 			AmountSelf:             item.AmountSelf,
 			AmountFourNew:          item.AmountFourNew,
+			OldUser:                item.OldUser,
 		})
 	}
 	return res, nil
